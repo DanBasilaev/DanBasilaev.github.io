@@ -10,7 +10,6 @@ Form.onsubmit = function() {
     let name = document.getElementById('POST-name');
     let key = String(favorites.length)
     favorites.setItem(key, name.value);
-    location.reload();
 
     //favorites.clear();
 
