@@ -3,13 +3,11 @@
 favorites = window.localStorage;
 const KEY = '5aa741a37ff6512516bcb3da3ea973f0';
 
-
 /*-------- Добавление --------*/
 let Form = document.getElementById('form')
 Form.onsubmit = function() {
     let name = document.getElementById('POST-name');
     favorites.setItem(name.value, name.value);
-
     //favorites.clear();
 
 };
@@ -17,14 +15,28 @@ Form.onsubmit = function() {
 
 for(let i=0; i<favorites.length; i++) {
     let key = favorites.key(i);
-    console.log(`${key}: ${localStorage.getItem(key)}`)
+    let favor = document.querySelector('.menu');
+    let city = document.createElement("li");
+    city.hidden = true;
+
+    let load = document.createElement('li');
+    load.classList.add('load');
+    load.classList.add('city');
+    let text = document.createElement('p');
+    load.appendChild(text);
+    text.textContent = "Подождите данные загружаются...";
+    favor.appendChild(load);
+
+
+
+
+
+
+
     var url = 'https://api.openweathermap.org/data/2.5/weather?q=' + favorites.getItem(key) + '&units=metric&lang=ru&appid=' + KEY;
 
     fetch(url).then(function (resp) {return resp.json() }).then(function (data) {
 
-        let favor = document.querySelector('.menu');
-
-        let city = document.createElement("li");
         city.classList.add('city');
 
         let head = document.createElement("div");
@@ -49,6 +61,7 @@ for(let i=0; i<favorites.length; i++) {
         head.appendChild(temp);
         head.appendChild(img);
         head.appendChild(btn);
+
 
 
 
@@ -95,8 +108,6 @@ for(let i=0; i<favorites.length; i++) {
         coord_data_city.classList.add('coord');
         coord_li.appendChild(coord_data_city);
         coord_data_city.textContent = '['+data.coord.lat + ', ' + data.coord.lon + ']';
-
-
         favor.appendChild(city);
     })
         /*--- Обработка ошибок ---*/
@@ -106,10 +117,16 @@ for(let i=0; i<favorites.length; i++) {
             favorites.removeItem(key);
             location.reload();
         });
+
+        load.hidden = true;
+        city.hidden = false;
+
+
+
+
+
+
 }
-
-
-console.log(favorites);
 
 
 
