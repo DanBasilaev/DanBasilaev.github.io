@@ -4,16 +4,37 @@ favorites = window.localStorage;
 const KEY = '5aa741a37ff6512516bcb3da3ea973f0';
 
 /*-------- Добавление --------*/
-let Form = document.getElementById('form')
-Form.onsubmit = function() {
+let Form = document.getElementById('form');
+Form.addEventListener("submit", function (event){
+    event.preventDefault();
     let name = document.getElementById('POST-name');
-    favorites.setItem(name.value, name.value);
-};
+    favorites.setItem(name.value.toLowerCase(), name.value);
+    name.value = "";
+    loadStorage();
+
+});
 
 
-for(let i=0; i<favorites.length; i++) {
-    let key = favorites.key(i);
+//Загрузка избранного
+function loadStorage(){
+    //Прорадитель избранного
     let favor = document.querySelector('.menu');
+
+    //цикл очищения
+    while (favor.firstChild){
+        favor.removeChild(favor.lastChild)
+    }
+
+    //Цикл заполнения
+    for(let i=0; i<favorites.length; i++) {
+        let key = favorites.key(i);
+        fill(key, favor);
+    }
+}
+
+//Функция генерации элемента
+function fill(key, favor){
+
     let city = document.createElement("li");
     city.hidden = true;
 
@@ -24,12 +45,6 @@ for(let i=0; i<favorites.length; i++) {
     load.appendChild(text);
     text.textContent = "Подождите данные загружаются...";
     favor.appendChild(load);
-
-
-
-
-
-
 
     var url = 'https://api.openweathermap.org/data/2.5/weather?q=' + favorites.getItem(key) + '&units=metric&lang=ru&appid=' + KEY;
 
@@ -49,10 +64,16 @@ for(let i=0; i<favorites.length; i++) {
         img.innerHTML = `<img src="https://openweathermap.org/img/wn/${data.weather[0]['icon']}@2x.png">`;
         let btn = document.createElement("button");
         btn.classList.add('delete');
-        btn.onclick = function (){
+
+        //Функция удаления города
+        btn.addEventListener("click", () => {
             favorites.removeItem(key);
-            location.reload();
-        }
+            load.remove();
+            city.remove();
+
+        }, false);
+
+
         btn.innerHTML =  `<img src="img/del.jpeg">`;
 
         head.appendChild(name);
@@ -107,24 +128,18 @@ for(let i=0; i<favorites.length; i++) {
         coord_li.appendChild(coord_data_city);
         coord_data_city.textContent = '['+data.coord.lat + ', ' + data.coord.lon + ']';
         favor.appendChild(city);
+
+        load.hidden = true;
+        city.hidden = false;
     })
         /*--- Обработка ошибок ---*/
         .catch(function () {
             //Обрабатываем ошибки
             alert(`Города ${localStorage.getItem(key)} нет в базе данных`);
+            load.remove();
             favorites.removeItem(key);
-            location.reload();
         });
-
-        load.hidden = true;
-        city.hidden = false;
-
-
-
-
-
-
 }
 
-
+loadStorage();
 
